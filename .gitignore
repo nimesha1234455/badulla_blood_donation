@@ -1,6 +1,36 @@
+﻿# Flutter/Dart
 .dart_tool/
 .pub/
+.pub-cache/
 build/
-.gradle/
+.flutter-plugins
+.flutter-plugins-dependencies
+
+# Android
 android/app/build/
+android/.gradle/
+android/captures/
+android/local.properties
+*.apk
+*.aab
+*.jks
+*.keystore
+
+# iOS
+ios/Pods/
+ios/.symlinks/
+ios/Flutter/Flutter.framework
+ios/Flutter/Flutter.podspec
+
+# IDE
+.idea/
+*.iml
+.vscode/
+
+# Backups / unused
 android_backup/
+my_new_app/
+
+# OS files
+.DS_Store
+Thumbs.db
