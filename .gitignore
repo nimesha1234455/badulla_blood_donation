@@ -6,6 +6,9 @@ build/
 .flutter-plugins
 .flutter-plugins-dependencies
 
+# Environment variables (Add this line)
+.env
+
 # Android
 android/app/build/
 android/.gradle/
