@@ -3,7 +3,15 @@
 A cross-platform **Flutter** application built to manage blood donors in the **Badulla region**, connecting donors with those in need through Firebase-powered real-time features.
 
 ---
+## 📸 Screenshots
 
+| Splash Screen | Login | Donor Registration |
+|:---:|:---:|:---:|
+| ![Splash](splash_screen.jpg) | ![Login](login_screen.jpg) | ![Donor Registration](donor_registration.jpg) |
+
+| Admin Panel |
+|:---:|
+| ![Admin Panel](admin_panel.jpg) |
 ## ✨ Features
 
 ### 🔐 Authentication
