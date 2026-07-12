@@ -58,12 +58,15 @@ exports.sendGroupNotification = onCall(async (request) => {
 
         const allDocs = [...oldDonorsSnapshot.docs, ...newDonorsDocs];
 
+        console.log(`sendGroupNotification: bloodType=${bloodType}, oldDonors=${oldDonorsSnapshot.docs.length}, allDonors=${allDonorsSnapshot.docs.length}, newDonors=${newDonorsDocs.length}, totalMatched=${allDocs.length}`);
+
         if (allDocs.length === 0) {
             return { success: false, message: "මෙම ලේ වර්ගයට අදාළව දැනුම් දිය යුතු දායකයින් නැත." };
         }
 
         const promises = [];
         const seenTokens = new Set();
+        let skippedNoToken = 0;
 
         allDocs.forEach((doc) => {
             const donor = doc.data();
@@ -77,8 +80,12 @@ exports.sendGroupNotification = onCall(async (request) => {
                     token: donor.fcmToken
                 };
                 promises.push(admin.messaging().send(message));
+            } else {
+                skippedNoToken++;
             }
         });
+
+        console.log(`sendGroupNotification: attemptingSends=${promises.length}, skippedNoToken=${skippedNoToken}`);
 
         if (promises.length === 0) {
             return { success: false, message: "මෙම ලේ වර්ගයට අදාළ දායකයින් සිටී, ඒත් notification token නැත." };
@@ -86,6 +93,15 @@ exports.sendGroupNotification = onCall(async (request) => {
 
         const results = await Promise.allSettled(promises);
         const successCount = results.filter(r => r.status === 'fulfilled').length;
+
+        // Log rejected sends so the exact FCM error is visible in Cloud Logging
+        results.forEach((r, i) => {
+            if (r.status === 'rejected') {
+                console.error(`FCM send failed [index ${i}]:`, r.reason && r.reason.message ? r.reason.message : r.reason);
+            }
+        });
+
+        console.log(`sendGroupNotification result: bloodType=${bloodType}, attempted=${promises.length}, success=${successCount}`);
 
         return { success: true, count: successCount };
     } catch (error) {

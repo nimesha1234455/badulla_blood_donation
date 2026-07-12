@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'notification_service.dart'; // මෙය අනිවාර්යයෙන්ම import කරන්න
+import 'notification_service.dart';
 import 'registration_screen.dart';
 import 'search_screen.dart';
 import 'splash_screen.dart';
@@ -10,15 +10,8 @@ import 'admin_panel.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  await Firebase.initializeApp(
-    options: const FirebaseOptions(
-      apiKey: "AIzaSyBNLe8uwSq5qtGmTI0Ttm_pi9UZKmqKHVk",
-      appId: "1:1013903904586:android:e80155319bd38066c57bb3",
-      messagingSenderId: "1013903904586",
-      projectId: "badulla-blood-bank",
-      storageBucket: "badulla-blood-bank.firebasestorage.app",
-    ),
-  );
+  // google-services.json eka auto initialize karanawa
+  await Firebase.initializeApp();
 
   // Notification Service එක Initialize කිරීම
   await NotificationService.initialize();

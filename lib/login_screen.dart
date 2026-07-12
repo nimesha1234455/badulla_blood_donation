@@ -55,35 +55,31 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
-  // ඇඩ්මින් සඳහා වෙනස් කළ කොටස
+  // Admin login - real Firebase Authentication
   Future<void> _adminLogin() async {
     setState(() => _isLoading = true);
     try {
-      UserCredential userCredential = await _auth.signInWithEmailAndPassword(
+      await _auth.signInWithEmailAndPassword(
         email: _adminEmailController.text.trim(),
         password: _adminPasswordController.text.trim(),
       );
-
-      DocumentSnapshot userDoc = await FirebaseFirestore.instance
-          .collection('users')
-          .doc(userCredential.user!.uid)
-          .get();
-
       if (mounted) {
-        if (userDoc.exists && (userDoc.data() as Map<String, dynamic>)['role'] == 'admin') {
-          // ඇඩ්මින් පැනල් එකට යන පාර මෙතන ඇතුළත් කර ඇත
-          Navigator.pushReplacementNamed(context, '/admin');
-        } else {
-          await _auth.signOut();
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text("Access Denied: Not an admin"), backgroundColor: Colors.red),
-          );
-        }
+        Navigator.pushReplacementNamed(context, '/admin');
       }
     } on FirebaseAuthException catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Login Error: ${e.message}"), backgroundColor: Colors.red),
-      );
+      String message = "Access Denied: Wrong credentials";
+      if (e.code == 'user-not-found') {
+        message = "No admin account found for this email";
+      } else if (e.code == 'wrong-password') {
+        message = "Incorrect password";
+      } else if (e.code == 'invalid-email') {
+        message = "Invalid email format";
+      }
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(message), backgroundColor: Colors.red),
+        );
+      }
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }
@@ -112,13 +108,34 @@ class _LoginScreenState extends State<LoginScreen> {
                   const Text('BLOOD BANK', style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: darkMaroon, letterSpacing: 1.5)),
                   const SizedBox(height: 32),
 
-                  _isLoading ? const CircularProgressIndicator(color: primaryRed)
-                      : _GlassButton(onTap: _signInWithGoogle, backgroundColor: Colors.white, textColor: Colors.black87, icon: const Text('G', style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Color(0xFF4285F4))), label: 'Sign in with Google Account'),
+                  _isLoading
+                      ? const CircularProgressIndicator(color: primaryRed)
+                      : _GlassButton(
+                    onTap: _signInWithGoogle,
+                    backgroundColor: Colors.white,
+                    textColor: Colors.black87,
+                    icon: const Text('G', style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Color(0xFF4285F4))),
+                    label: 'Sign in with Google Account',
+                  ),
 
                   const SizedBox(height: 24),
-                  _GlassButton(onTap: _signInWithGoogle, backgroundColor: primaryRed, textColor: Colors.white, icon: const Icon(Icons.person_add, color: Colors.white), label: 'DONOR SIGN IN', bold: true),
+                  _GlassButton(
+                    onTap: _signInWithGoogle,
+                    backgroundColor: primaryRed,
+                    textColor: Colors.white,
+                    icon: const Icon(Icons.person_add, color: Colors.white),
+                    label: 'DONOR SIGN IN',
+                    bold: true,
+                  ),
                   const SizedBox(height: 16),
-                  _GlassButton(onTap: () => setState(() => _showAdminLogin = !_showAdminLogin), backgroundColor: darkMaroon, textColor: Colors.white, icon: const Icon(Icons.key, color: Colors.white), label: 'ADMIN LOGIN (Staff Only)', bold: true),
+                  _GlassButton(
+                    onTap: () => setState(() => _showAdminLogin = !_showAdminLogin),
+                    backgroundColor: darkMaroon,
+                    textColor: Colors.white,
+                    icon: const Icon(Icons.key, color: Colors.white),
+                    label: 'ADMIN LOGIN (Staff Only)',
+                    bold: true,
+                  ),
 
                   if (_showAdminLogin) ...[
                     const SizedBox(height: 20),
@@ -230,6 +247,7 @@ class _BackgroundPatternPainter extends CustomPainter {
       }
     }
   }
+
   void _drawDrop(Canvas canvas, Offset center, double size, Paint paint) {
     final path = Path();
     path.moveTo(center.dx, center.dy);
@@ -237,6 +255,7 @@ class _BackgroundPatternPainter extends CustomPainter {
     path.cubicTo(center.dx + size * 0.4, center.dy + size, center.dx + size * 0.5, center.dy + size * 0.5, center.dx, center.dy);
     canvas.drawPath(path, paint);
   }
+
   @override
   bool shouldRepaint(CustomPainter oldDelegate) => false;
 }
