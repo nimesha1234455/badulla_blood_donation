@@ -6,9 +6,9 @@ A cross-platform **Flutter** application built to manage blood donors in the **B
 |:---:|:---:|:---:|
 | ![Splash](splash_screen.png.jpg) | ![Login](login_screen.png.jpg) | ![Donor Registration](donor_registration.png.jpg) |
 
-| Donor Details |
-|:---:|
-| ![Donor Details](donor_details.png.jpg) |
+| Admin Panel | Donor Details |
+|:---:|:---:|
+| ![Admin Panel](admin_panel.png.jpg) | ![Donor Details](donor_deatails.png.jpg) |
 ## ✨ Features
 ### 🔐 Authentication
 - Google Sign-In integration
